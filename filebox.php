@@ -1,28 +1,30 @@
 <?php
 /**
  * 程序说明
- * @package   FileBox
- * @author    Jooies <jooies@ya.ru>
- * @copyright Copyright (c) 2014-2016
- * @since     Version 1.10.0.1
+ * @package   FileBox修改版
+ * @author    cao.gs
+ * @copyright Copyright (c) 2022
+ * @since     Version 1.20
  *
- * 设置说明  
+ * 设置说明
  * $sitetitle - 标题名称
  * $user - 用户名
  * $pass - 密码
  * $safe_num - 设置多少次后禁止登陆，为0则不限制，建议为3-5
  * $mail - 若有恶意登录，会发邮件到这个邮箱，前提是mail()函数可用！
  */
-header('Content-Type: text/html; charset=utf-8');
-date_default_timezone_set('Asia/Shanghai');
+error_reporting(0); //抑制所有错误信息
+@header("content-Type: text/html; charset=utf-8"); //语言强制
+date_default_timezone_set('Asia/Shanghai');//此句用于消除时间差
+ignore_user_abort(true);
 session_start();
-error_reporting(1);
 $sitetitle = 'FileBox';
 $user = 'admin';
 $pass = '123456';
-$safe_num = 0;//设置多少次后禁止登陆，为0则不限制，建议为3-5
-$mail = 'i@hezi.be';//若有恶意登录，会发邮件到这个邮箱，前提是mail()函数可用！
+$safe_num = 5;//设置多少次后禁止登陆，为0则不限制，建议为3-5
+$mail = 'admin@cao.gs';//若有恶意登录，会发邮件到这个邮箱，前提是mail()函数可用！
 $meurl = $_SERVER['PHP_SELF'];
+$me = end(explode('/',$meurl));
 $os = (DIRECTORY_SEPARATOR=='\\')?"windows":'linux';
 $op = (isset($_REQUEST['op']))?htmlentities($_REQUEST['op']):'home';
 $action = (isset($_REQUEST['action']))?htmlspecialchars($_REQUEST['action']):'';
@@ -52,7 +54,6 @@ if ($_COOKIE['user'] != $user || $_COOKIE['pass'] != md5($pass)) {
 	}
 }
 
-
 /****************************************************************/
 /* function maintop()                                           */
 /*                                                              */
@@ -64,19 +65,24 @@ function maintop($title,$showtop = true) {
     global $meurl,$sitetitle,$op;
     echo "<!DOCTYPE html>\n<meta name='robots' content='noindex,follow' />\n<head>\n<meta name='viewport' content='width=device-width, initial-scale=1'/>\n"
         ."<title>$sitetitle - $title</title>\n"
-        ."</head>\n"
         ."<body>\n"
-        ."<style>\n*{font-family:'Verdana','Microsoft Yahei';}.box{border:1px solid #ccc;background-color:#fff;padding:10px;}abbr{text-decoration:none;}.title{border:1px solid #ccc;border-bottom:0;font-weight:normal;text-align:left;width:678px;padding:10px;font-size:12px;color:#666;background-color:#F0F0F0;}.right{float:right;text-align:right !important;}.content{width:700px;margin:auto;overflow:hidden;font-size:13px;}.login_button{height:43px;line-height:18px;font-family:'Candara';}.login_text{font-family:'Candara','Microsoft Yahei';vertical-align:middle;padding:7px;width:40%;font-size:22px;border:1px #ccc solid;}input[type=text]:focus,input[type=password]:hover{outline:0;background-color:#f8f8f8;}input[type=text]:hover,input[type=password]:hover,input[type=password]:active{outline:0;background-color:#f8f8f8;}h2{color:#514f51;text-align:center;margin:16px 0;font-size:48px;background-image: -webkit-gradient(linear, 0 0, 0 bottom, from(#7d7d7d), to(#514f51));-webkit-background-clip: text;background-clip: text;-webkit-text-fill-color: transparent;font-family:'Candara','Lucida Sans','Microsoft Yahei' !important;}span{margin-bottom:8px;}a:visited{color:#333;text-decoration:none;}a:hover{color:#999;text-decoration:none;}a{color:#333;text-decoration:none;border-bottom:1px solid #CCC;}a:active{color:#999;text-decoration:none;}.title a,td a,.menu a{border:0}textarea{outline:none;font-family:'Yahei Consolas Hybrid',Consolas,Verdana,Tahoma,Arial,Helvetica,'Microsoft Yahei',sans-serif !important;font-size:13px;border:1px solid #ccc;margin-top:-1px;padding:8px;line-height:18px;width:682px;max-width:682px;}input.button{background-color:#eeeeee;text-align:center !important;outline:none;border:1px solid #adadad;*display:inline;color:#000;padding:3px 18px;font-size:13px;margin-top:10px;transition: border-color 0.5s;}input.button:hover{background-color:#e5f1fb;border-color:#0078d7;}input.mob{padding:3px 40px;}input.text,select,option,.upload{border:1px solid #ccc;margin:6px 1px;padding:5px;font-size:13px;height:16px;}body{background-color:#fff;margin:0px 0px 10px;}.error{font-size:10pt;color:#AA2222;text-align:left}.menu{position:fixed;font-size:13px;}.menu li{list-style-type:none;padding:7px 25px;border-left:#fff solid 3px;margin-bottom:2px;}.menu li.curr{border-left:#666 solid 3px;background-color:#f7f7f7;} .menu li:hover{border-color:#469;background-color:#ededed;}.odTable span {cursor:pointer;}.odTable b{color:#ccc;font-size:12px;}.menu a:hover{color:#707070;}.table{background-color:#777;color:#fff;}th{text-align:left;height:40px;line-height:40px;border-bottom:3px solid #dbdbdb;font-size:14px;background-color:#f8f8f8 !important;}table{border:1px solid #ccc;border-collapse:collapse;}tr{color:#666;height:31px;font-size:12px;}tr a{color:#333}th{color:#333;}tr:nth-child(odd){background-color:#fff;}tr:nth-child(even){background-color:#f5f5f7;}tr:hover{background-color:#ebeced;}.upload{width:50%;}.home,.com{display:none;}.long{width:70%}.short{width:20%}.open{width:40px;}.rename{width:50px;}\n@media handheld, only screen and (max-width: 960px) {textarea{width: calc(100% - 18px);max-width: calc(100% - 18px);}.upload{width:calc(100% - 18px);}.login_button{width: 100%;margin-top:0 !important;padding:20px 5px !important;height:60px;font-size:23px !important;}.login_text{display: block;margin-bottom: 0;padding:20px 10px;width: 100%;border-bottom:0;}.menu{margin-left: -40px;position: static;padding:0;}.menu li{padding-bottom: 8px;}.title{width:calc(100% - 22px);}input.mob{height:40px;font-size:15px;width:100%;display:block;}.content{width:100%}input.button{padding:3px 10px;}.mobile b,.mobi{display:none;}.com{display:inline;}th{font-weight:normal;font-size:12px;}.open,.rename{width:25px;}}</style>\n";
+        ."<style>\n*{font-family:'Verdana','Microsoft Yahei';}      .appName{text-align:center;font-size:1.5em;top:0;height:fit-content;bottom:0;left:10px;margin:auto}
+        .appName b{color:#1e9fff}
+        .appName{font-size:1.8em}
+         #Note.active{background:#1e9fff;color:white}
+        #Note{border-radius:10px 10px 10px 0;background:#f5f5f5;display:inline-block;margin-left:5px;color:#ababab;padding:0 5px;font-size:.4em;vertical-align:top}.box{border:1px solid #ccc;background-color:#fff;padding:10px;}abbr{text-decoration:none;}.title{border:1px solid #ccc;border-bottom:0;font-weight:normal;text-align:left;width:678px;padding:10px;font-size:12px;color:#666;background-color:#F0F0F0;}.right{float:right;text-align:right !important;}.content{width:700px;margin:auto;overflow:hidden;font-size:13px;}.login_button{height:43px;line-height:18px;font-family:'Candara';}.login_text{font-family:'Candara','Microsoft Yahei';vertical-align:middle;padding:7px;width:40%;font-size:22px;border:1px #ccc solid;}input[type=text]:focus,input[type=password]:hover{outline:0;background-color:#f8f8f8;}input[type=text]:hover,input[type=password]:hover,input[type=password]:active{outline:0;background-color:#f8f8f8;}span{margin-bottom:8px;}a:visited{color:#333;text-decoration:none;}a:hover{color:#999;text-decoration:none;}a{color:#333;text-decoration:none;border-bottom:1px solid #CCC;}a:active{color:#999;text-decoration:none;}.title a,td a,.menu a{border:0}textarea{outline:none;font-family:'Yahei Consolas Hybrid',Consolas,Verdana,Tahoma,Arial,Helvetica,'Microsoft Yahei',sans-serif !important;font-size:13px;border:1px solid #ccc;margin-top:-1px;padding:8px;line-height:18px;width:682px;max-width:682px;}input.button{background-color:#eeeeee;text-align:center !important;outline:none;border:1px solid #adadad;*display:inline;color:#000;padding:3px 18px;font-size:13px;margin-top:10px;transition: border-color 0.5s;}input.button:hover{background-color:#e5f1fb;border-color:#0078d7;}input.mob{padding:3px 40px;}input.text,select,option,.upload{border:1px solid #ccc;margin:6px 1px;padding:5px;font-size:13px;height:16px;}body{background-color:#fff;margin:10px 0px 10px;}.error{font-size:10pt;color:#AA2222;text-align:left}.menu{position:fixed;font-size:13px;}.menu li{list-style-type:none;padding:7px 25px;border-left:#fff solid 3px;margin-bottom:2px;}.menu li.curr{border-left:#1e9fff solid 3px;background-color:#f7f7f7;} .menu li:hover{border-color:#469;background-color:#ededed;}.odTable span {cursor:pointer;}.odTable b{color:#ccc;font-size:12px;}.menu a:hover{color:#707070;}.table{background-color:#777;color:#fff;}th{text-align:left;height:40px;line-height:40px;border-bottom:3px solid #dbdbdb;font-size:14px;background-color:#f8f8f8 !important;}table{border:1px solid #ccc;border-collapse:collapse;}tr{color:#666;height:31px;font-size:12px;}tr a{color:#333}th{color:#333;}tr:nth-child(odd){background-color:#fff;}tr:nth-child(even){background-color:#f5f5f7;}tr:hover{background-color:#ebeced;}.upload{width:50%;}.home,.com{display:none;}.long{width:70%}.short{width:20%}.open{width:40px;}.rename{width:50px;}\n@media handheld, only screen and (max-width: 960px) {textarea{width: calc(100% - 18px);max-width: calc(100% - 18px);}.upload{width:calc(100% - 18px);}.login_button{width: 100%;margin-top:0 !important;padding:20px 5px !important;height:60px;font-size:23px !important;}.login_text{display: block;margin-bottom: 0;padding:20px 10px;width: 100%;border-bottom:0;}.menu{margin-left: -40px;position: static;padding:0;}.menu li{padding-bottom: 8px;}.title{width:calc(100% - 22px);}input.mob{height:40px;font-size:15px;width:100%;display:block;}.content{width:100%}input.button{padding:3px 10px;}.mobile b,.mobi{display:none;}.com{display:inline;}th{font-weight:normal;font-size:12px;}.open,.rename{width:25px;}}</style>\n";
     $back=($op!=='home')?$back = "<a href='{$meurl}?op=home&folder=".$_SESSION['folder']."'><li>返回 ".$_SESSION['folder']."</li></a>\n":$back = '';
-    echo "<h2>$sitetitle</h2>\n";
+    echo "<div class='appName'><b>$sitetitle</b><div id='Note'>做爱做之事，交配交之人。</div></div><br>\n";
     if ($showtop) {//头部菜单内容
-      if($op=='up'||$op=='upload'||$op=='yupload')$up = "class='curr'";if($op=='home'||$op =='edit'||$op =='ren'||$op =='unz')$home = "class='curr'";if($op=='cr'||$op=='create')$cr = "class='curr'";if($op=='sqlb'||$op=='sqlbackup')$sqlb = "class='curr'";if($op=='ftpa'||$op=='ftpall')$ftpa = "class='curr'";
+      if($op=='up'||$op=='upload'||$op=='yupload')$up = "class='curr'";if($op=='home'||$op =='edit'||$op =='ren'||$op =='unz')$home = "class='curr'";if($op=='cr'||$op=='create')$cr = "class='curr'";if($op=='allz'||$op=='allzip')$allz = "class='curr'";if($op=='sqlb'||$op=='sqlbackup')$sqlb = "class='curr'";if($op=='ftpa'||$op=='ftpall')$ftpa = "class='curr'";if($op=='kill'||$op=='killme')$kill = "class='curr'";
         echo "<div class='menu'>\n<ul><a href='{$meurl}?op=home'><li $home>主页</li></a>\n"
             .$back
             ."<a href='{$meurl}?op=up'><li $up>上传文件</li></a>\n"
             ."<a href='{$meurl}?op=cr'><li $cr>创建文件</li></a>\n"
+			."<a href='{$meurl}?op=allz'><li $allz>全站备份</li></a>\n"
             ."<a href='{$meurl}?op=sqlb'><li $sqlb>MySQL备份</li></a>\n"
             ."<a href='{$meurl}?op=ftpa'><li $ftpa>FTP备份</li></a>\n"
+			."<a href='{$meurl}?op=kill'><li $kill>删除程序</li></a>\n"
             ."<a href='{$meurl}?op=logout'><li>注销</li></a>\n"
             ."</ul></div>";
     }
@@ -100,7 +106,7 @@ function login($er=false) {
         if (isset($_SESSION['error'])){
             $_SESSION['error']++;
             if($_SESSION['error'] > $safe_num && $safe_num !== 0){
-                mail($mail,'FileBox文件管理器提醒：文件被恶意登录！','该提醒来自FileBox：<br>登录者IP为：'.$_SERVER['REMOTE_ADDR'],'From: <i@hezi.be>');
+                mail($mail,'FileBox文件管理器提醒：文件被恶意登录！','该提醒来自FileBox：<br>登录者IP为：'.$_SERVER['REMOTE_ADDR'],'From: <admin@cao.gs>');
                 echo ('<span class="error">ERROR: 您已经被限制登陆！</span>');
                 exit;
             }
@@ -146,7 +152,7 @@ function home() {
     if ($stylesheet !== "." && $stylesheet !== ".." ) {
         $stylesheet = uCode($stylesheet);
         $folder = uCode($folder);
-        $trontd = "<tr width=100% onclick='st=document.getElementById(\"$stylesheet\").checked;if(st==true){document.getElementById(\"$stylesheet\").checked=false;this.style.backgroundColor=\"\";}else{document.getElementById(\"$stylesheet\").checked=true;this.style.backgroundColor=\"#e3e3e5\";}'><td><svg width='21' height='21'>";
+        $trontd = "<tr width=100% onclick='st=document.getElementById(\"$stylesheet\").checked;if(st==true){document.getElementById(\"$stylesheet\").checked=false;this.style.backgroundColor=\"\";}else{document.getElementById(\"$stylesheet\").checked=true;this.style.backgroundColor=\"#66ffff\";}'><td><svg width='21' height='21'>";
         $rename = "<td><a href='{$meurl}?op=ren&file=".htmlspecialchars($stylesheet)."&folder=$folder'><span class='com'>💽</span><span class='mobi'>重命名</span></a></td>\n";
         if (is_dir(gCode($folder.$stylesheet)) && is_readable(gCode($folder.$stylesheet))) {
             $content1[$a] = "$trontd<rect width='10px' height='14' style='fill:#ffe792' stroke='#e6c145' stroke-width='0.5' x='4' y='4'/><rect width='2px' height='5px' style='fill:#ffe792' stroke='#e6c145' stroke-width='0.5' x='13' y='13'/></svg><input name='select_item[d][$stylesheet]'  type='checkbox' id='$stylesheet' class='checkbox home' value='{$folder}{$stylesheet}' /></td>\n"
@@ -206,12 +212,12 @@ function home() {
         echo '<a href="'.$meurl.'?op=home&folder='.$u.'">'.$v.'</a> » ';
     }
     echo "文件\n"
-        ."<span class='right'>",$a-1," 个文件夹 ",$b-1," 个文件</span></div>"
+        ."<span class='right'>",$a-1," 个文件夹 ",$b-1," 个文件</span>"
         ."<div style='position:fixed;bottom:0;margin-left:3px;'><input type='checkbox' id='check' onclick='Check()'> <input class='button' name='action' type='submit' value='移动' /> <input class='button' name='action' type='submit' value='复制' /> <input class='button' name='action' type='submit' onclick='return confirm(\"点击确认后，选中的文件将作为Backup-time.zip创建！\")'  value='压缩' /> <input class='button' name='action' type='submit' onclick='return confirm(\"您真的要删除选中的文件吗?\")' value='删除' /> <input class='button' name='action' type='submit' onclick='var t=document.getElementById(\"chmod\").value;return confirm(\"将这些文件的权限修改为\"+t+\"？如果是文件夹，将会递归文件夹内所有内容！\")' value='权限' /> <input type='text' class='text' stlye='vertical-align:text-top;' size='3' id='chmod' name='chmod' value='0755'></div>";
 
     if($os!=='windows'):$qx = "<th width=40>权限</th>\n";else:$qx = '';endif;
     echo "<thead><span id='idCheckbox'></span><tr class='headtable' width=100%>"
-        ."<script>function Check(){collid=document.getElementById('check');coll=document.getElementsByTagName('input');if(collid.checked){for(var i=0;i<coll.length;i++){if(coll[i].type=='checkbox'){coll[i].checked=true;coll[i].parentNode.parentNode.style.backgroundColor='#e3e3e5';}}}else{for(var i=0;i<coll.length;i++){if(coll[i].type=='checkbox'){coll[i].checked=false;coll[i].parentNode.parentNode.style.backgroundColor='';}}}}</script>"
+        ."<script>function Check(){collid=document.getElementById('check');coll=document.getElementsByTagName('input');if(collid.checked){for(var i=0;i<coll.length;i++){if(coll[i].type=='checkbox'){coll[i].checked=true;coll[i].parentNode.parentNode.style.backgroundColor='#66ccff';}}}else{for(var i=0;i<coll.length;i++){if(coll[i].type=='checkbox'){coll[i].checked=false;coll[i].parentNode.parentNode.style.backgroundColor='';}}}}</script>"
        ."<th width=20px></th>\n"
        ."<th style='width: calc(100% - 225px);'><div class='mobile'><span onclick=\"sortTable('_order',1);\">文件名</span> <b>/</b> <span onclick=\"sortTable('_ext',1);\">类型 <b>/</b></span> <span onclick=\"sortTable('_time',1,'int');\">时间</span></div></th>\n"
        ."<th width=65px><span onclick=\"sortTable('_size',2,'int');\">大小</span></th>\n"
@@ -242,13 +248,7 @@ function gettime($filename){return "修改时间：".date("Y-m-d H:i:s",filemtim
 function uCode($text){return mb_convert_encoding($text,'UTF-8','GBK');}
 function gCode($text){return mb_convert_encoding($text,'GBK','UTF-8');}
 
-/**
- * 获取目录大小。为保证执行效率，本方法不用了。
- * @param  [type] $directoty [description]
- * @return [type]            [description]
- */
 function dirSize($directoty){
-	return '';
   $dir_size=0;
     if($dir_handle=opendir($directoty))
     	{
@@ -463,6 +463,66 @@ function upload($upfile,$ndir,$unzip,$delzip) {
 }
 
 /****************************************************************/
+/* function allz()                                               */
+/*                                                              */
+/* First step in allzip.                                        */
+/* Prompts the user for confirmation.                           */
+/* Recieves $dename and ask for deletion confirmation.          */
+/****************************************************************/
+
+function allz() {
+    global $meurl, $folder;
+    maintop("全站备份");
+    echo "<div class='title'>全站备份</div><div class='box'>压缩包格式为 zipper-年-月-日-时-分.zip 如存在同文件名压缩包，该压缩包将被覆盖!</div>"
+         ."<div class='right'><a href='{$meurl}?op=allzip'><input class='right button mob' value='确定' type='submit'></a><a href='{$meurl}?op==home'><input class='right button mob' value='取消' type='submit'></a></div>\n";
+    mainbottom();
+}
+
+/****************************************************************/
+/* function allzip()                                            */
+/*                                                              */
+/* Second step in unzip.                                       */
+/****************************************************************/
+function allzip() {
+global $meurl;
+maintop("全站备份");
+if (isset($_POST['allzip'])) {
+  $zippath = !empty($_POST['zippath']) ? strip_tags($_POST['zippath']) : '.';
+  $zipfile = 'zipper-' . date("Y-m-d-H-i") . '.zip';
+  Zipper::zipDir($zippath, $zipfile);
+}
+if (file_exists('zipper-' . date("Y-m-d-H-i") . '.zip')) {
+unlink('zipper-' . date("Y-m-d-H-i") . '.zip'); }
+else {
+}
+class Zipper extends ZipArchive {
+public function addDir($path) {
+$this->addEmptyDir($path);
+$nodes = glob($path . '/*');
+foreach ($nodes as $node) {
+if (is_dir($node)) {
+$this->addDir($node);
+} else if (is_file($node))  {
+$this->addFile($node);
+}
+}
+}
+}
+$zip = new Zipper;
+$res = $zip->open('zipper-' . date("Y-m-d-H-i") . '.zip', ZipArchive::CREATE);
+if ($res === TRUE) {
+$zip->addDir('.');
+$zip->close();
+echo '<div class="title">压缩包 zipper-' . date("Y-m-d-H-i") . '.zip 备份成功！</div>'
+    ." <a href='{$meurl}?op=home'><input class='right button mob' value='返回文件管理' type='submit'></a>\n";
+} else {
+echo '<div class="title"><span class="error" style="font-size:12px;">备份失败！</span></div>'
+    ." <a href='{$meurl}?op=home'><input class='right button mob' value='返回文件管理' type='submit'></a>\n";
+}
+    mainbottom();
+}
+
+/****************************************************************/
 /* function unz()                                               */
 /*                                                              */
 /* First step in unz.                                        */
@@ -564,7 +624,6 @@ function unzip($dename,$ndir,$del) {
         home();
     }
 }
-
 
 /****************************************************************/
 /* function delete()                                            */
@@ -932,7 +991,7 @@ function logout() {
 
 function mainbottom() {
     echo "</div><div style='text-align:center;font-size:13px;color:#999 !important;margin:10px 0 45px 0;font-family:Candara;'>"
-        ."FileBox Version 1.10.0.1</div></body>\n"
+        ."FileBox Version 1.20</div></body>\n"
         ."</html>\n";
     exit;
 }
@@ -958,7 +1017,7 @@ function sqlb() {
 /* Second step in backup sql.                                   */
 /****************************************************************/
 
-function sqlbackup($ip="localhost",$sql,$username="root",$password) {
+function sqlbackup($sql,$password,$ip="localhost",$username="root") {
 	global $meurl;
     if(class_exists('ZipArchive')){
     $database=$sql;//数据库名
@@ -1016,7 +1075,7 @@ function list_tables($database,$mysql)
 }
 
 //导出数据库
-function dump_table($table, $fp = null,$mysql)
+function dump_table($table,$mysql, $fp = null)
 {
     $need_close = false;
     if (is_null($fp)) {
@@ -1056,7 +1115,7 @@ function get_insert_sql($table, $row)
 function ftpa() {
 	global $meurl;
     maintop("FTP备份");
-    echo "<div class='title'>这将把文件远程上传到其他ftp！如目录存在该文件,文件将被覆盖！</div>\n<form action='{$meurl}?op=ftpall' method='POST'><div class='box'><label for='ftpip'>FTP 地址：</label><input type='text' id='ftpip' name='ftpip' size='30' class='text' value='127.0.0.1:21'/><br><label for='ftpuser'>FTP 用户：</label><input type='text' id='ftpuser' name='ftpuser' size='30' class='text'/><br><label for='ftppass'>FTP 密码：</label><input type='password' id='ftppass' name='ftppass' size='30' class='text'/><br><label type='text' for='goto'>上传目录：</label><input type='text' id='goto' name='goto' size='30' class='text' value='./htdocs/'/><br><label for='ftpfile'>上传文件：</label><input type='text' id='ftpfile' name='ftpfile' size='30' class='text' value='allbackup.zip'/></div><div class='right'><label for='del'><input type='checkbox' name='del' id='del'value='checkbox'><abbr title='FTP上传后删除本地文件'>删除</abbr></label> <input name='submit' class='button' value='远程上传' type='submit' /></div></form>\n";
+    echo "<div class='title'>这将把文件远程上传到其他FTP！如目录存在该文件,文件将被覆盖！</div>\n<form action='{$meurl}?op=ftpall' method='POST'><div class='box'><label for='ftpip'>FTP 地址：</label><input type='text' id='ftpip' name='ftpip' size='30' class='text' value='127.0.0.1:21'/><br><label for='ftpuser'>FTP 用户：</label><input type='text' id='ftpuser' name='ftpuser' size='30' class='text'/><br><label for='ftppass'>FTP 密码：</label><input type='password' id='ftppass' name='ftppass' size='30' class='text'/><br><label type='text' for='goto'>上传目录：</label><input type='text' id='goto' name='goto' size='30' class='text' value='./public_html/'/><br><label for='ftpfile'>上传文件：</label><input type='text' id='ftpfile' name='ftpfile' size='30' class='text' value='xxx.zip'/></div><div class='right'><label for='del'><input type='checkbox' name='del' id='del'value='checkbox'><abbr title='FTP上传后删除本地文件'>删除</abbr></label> <input name='submit' class='button' value='远程上传' type='submit' /></div></form>\n";
     mainbottom();
 }
 
@@ -1108,6 +1167,35 @@ function ftpall($ftpip,$ftpuser,$ftppass,$ftpdir,$ftpfile,$del) {
     mainbottom();
 }
 
+/****************************************************************/
+/* function killme()                                            */
+/* 删除脚本                                                     */
+/****************************************************************/
+
+function kill() {
+    global $meurl, $folder, $me;
+    maintop("删除程序");
+    echo "<div class='title'>删除脚本</div><div class='box'>确认你要删除FlieBox脚本程序？</div>"
+         ."<div class='right'><a href='{$meurl}?op=killme&dename=".$me."&folder=./'><input class='right button mob' value='确定' type='submit'></a><a href='{$meurl}?op==home'><input class='right button mob' value='取消' type='submit'></a></div>\n";
+    mainbottom();
+}
+
+function killme($dename) {
+  global $folder;
+  if (!$dename == "") {
+    maintop("删除程序");
+      if(unlink($folder.$dename)) {
+        echo "删除成功！"
+        ." <a href=".$folder.">返回网站首页</a>\n";
+      } else {
+        echo "无法删除！"
+        ." <a href=\"/\">返回网站首页</a>\n";
+      }
+    mainbottom();
+  } else {
+    home();
+  }
+}
 
 /****************************************************************/
 /* function printerror()                                        */
@@ -1410,6 +1498,14 @@ switch($op) {
     ftpall($_POST['ftpip'], $_POST['ftpuser'], $_POST['ftppass'], $_POST['goto'], $_POST['ftpfile'], $_POST['del']);
     break;
 
+    case "allz":
+	allz();
+	break;
+
+    case "allzip":
+	allzip();
+	break;
+
     case "edit":
     edit($_REQUEST['fename']);
     break;
@@ -1458,9 +1554,16 @@ switch($op) {
     zip($_REQUEST['dename'],$_REQUEST['folder']);
     break;
 
+    case "kill":
+    kill();
+    break;
+
+    case "killme":
+	killme($_REQUEST['dename']);
+	break;
+
     default:
     home();
     break;
 }
-
 ?>
